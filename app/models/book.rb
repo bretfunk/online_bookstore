@@ -1,4 +1,5 @@
 class Book < ApplicationRecord
+  validate :title, presence: true
   belongs_to :author
   belongs_to :publisher
   has_many :book_reviews
@@ -19,22 +20,22 @@ class Book < ApplicationRecord
       book_format_type_id: options[:book_format_type_id] || nil,
       book_format_physical: options[:book_format_physical] || nil
     }
-
+#case insensitive and distinct
     if new_options[:title_only] && new_options[:book_format_physical]
-      puts "title and physical"
+      #Book.joins(:book_format_types).where(book: { title: new_options[:title_only]}, book_format_type: { physical: true })
     elsif new_options[:title_only]
-      puts "title only"
+      Book.where(title: new_options[:title_only])
     elsif new_options[:book_format_type_id]
-      puts "book format type"
+      BookFormatType.joins(:books).select("books.*").where(physical: true)
     elsif new_options[:book_format_physical]
       puts "physical?"
     end
 
   end
 
-  def book_format_types
-    super.distinct.pluck(:name)
-  end
+  #def book_format_types
+    #super.distinct.pluck(:name)
+  #end
 
   def author_name
     "#{author.last_name}, #{author.first_name}"
