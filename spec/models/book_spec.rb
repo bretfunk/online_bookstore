@@ -62,7 +62,20 @@ RSpec.describe Book, type: :model do
       book.book_format_types.first.physical = true
 
       #search
-      search = Book.search('Karamazov', title_only: true, book_format_physical: true)
+      author = create(:author)
+      publisher = create(:publisher)
+      create(:book, author_id: author.id, publisher_id: publisher.id)
+      search = Book.search(author.first_name, title_only: true)
+      expect(search.count).to eq(1)
+      search = Book.search(author.first_name.shift.pop, title_only: true)
+      expect(search.count).to eq(0)
+      search = Book.search(publisher.name, title_only: true)
+      expect(search.count).to eq(1)
+      search = Book.search(publisher.name.shift.pop, title_only: true)
+      expect(search.count).to eq(0)
+      search = Book.search(book.title, title_only: true)
+      expect(search.count).to eq(1)
+      search = Book.search(book.title.shift.pop, title_only: true)
       expect(search.count).to eq(1)
 
 

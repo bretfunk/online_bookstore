@@ -1,5 +1,5 @@
 class Book < ApplicationRecord
-  validate :title, presence: true
+  validates :title, presence: true
   belongs_to :author
   belongs_to :publisher
   has_many :book_reviews
@@ -22,15 +22,19 @@ class Book < ApplicationRecord
     }
 #case insensitive and distinct
     if new_options[:title_only] && new_options[:book_format_physical]
-      #Book.joins(:book_format_types).where(book: { title: new_options[:title_only]}, book_format_type: { physical: true })
+      BookFormatType.joins(:books).select("books.*").where(physical: true).where(title: new_options[:book_format_physical])
     elsif new_options[:title_only]
-      Book.where(title: new_options[:title_only])
-    elsif new_options[:book_format_type_id]
-      BookFormatType.joins(:books).select("books.*").where(physical: true)
-    elsif new_options[:book_format_physical]
-      puts "physical?"
-    end
+      Book.where("title LIKE (?)", "%#{query}%") ||
+      Author.where(last_name: query).books ||
+      Publisher.where(title: query).books
 
+      #SELECT DISTINCT COL_NAME FROM myTable WHERE UPPER(COL_NAME) LIKE UPPER('%PriceOrder%')
+      #Book.where(title: new_options[:title_only])
+    elsif new_options[:book_format_type_id]
+      BookFormatType.joins(:books).select("books.*").where(id: newOptions[:book_format_type_id])
+    elsif new_options[:book_format_physical]
+      BookFormatType.joins(:books).select("books.*").where(physical: true)
+    end
   end
 
   #def book_format_types
