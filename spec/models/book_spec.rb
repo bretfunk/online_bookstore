@@ -62,21 +62,49 @@ RSpec.describe Book, type: :model do
       book.book_format_types.first.physical = true
 
       #search
+      #title_only
       author = create(:author)
       publisher = create(:publisher)
       create(:book, author_id: author.id, publisher_id: publisher.id)
-      search = Book.search(author.first_name, title_only: true)
+      #author
+      search = Book.search(author.last_name, title_only: true)
       expect(search.count).to eq(1)
-      search = Book.search(author.first_name.shift.pop, title_only: true)
+      search = Book.search(author.last_name.shift.pop, title_only: true)
       expect(search.count).to eq(0)
+      search = Book.search(author.last_name.upcase, title_only: true)
+      expect(search.count).to eq(1)
+      #publisher
       search = Book.search(publisher.name, title_only: true)
       expect(search.count).to eq(1)
       search = Book.search(publisher.name.shift.pop, title_only: true)
       expect(search.count).to eq(0)
+      search = Book.search(publisher.name.downcase, title_only: true)
+      expect(search.count).to eq(1)
+      #title
       search = Book.search(book.title, title_only: true)
       expect(search.count).to eq(1)
       search = Book.search(book.title.shift.pop, title_only: true)
       expect(search.count).to eq(1)
+
+      #book_format_type_id
+      book_format_type = create(:book_format_type)
+      books = create_list(:book, 3)
+      book_format_type.books << books
+      search = Book.search("1", book_format_type_id: true)
+
+      expect(search.count).to eq(3)
+
+      #book_format_physical
+      book_format_type = create(:book_format_type, name: "Hardcover", physical: true)
+      books = create_list(:book, 3)
+      book_format_type.books << books
+      search = Book.search("Hardcover", physical: true)
+
+      expect(search.count).to eq(3)
+
+      search = Book.search("Softcover", physical: true)
+
+      expect(search.count).to eq(0)
 
 
     end
