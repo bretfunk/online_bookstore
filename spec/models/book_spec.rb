@@ -51,11 +51,12 @@ RSpec.describe Book, type: :model do
       create(:book_format, book_id: book.id, book_format_type_id: book_format_type3.id)
 
       #book_format_types
-      expect(book.book_format_types).to eq('["Hardcover", "Softcover", Kindle"]')
+      test_array = ["Hardcover", "Kindle", "Softcover"]
+      expect(book.book_format_typez).to eq(test_array)
 
-      rating1 = create(:book_review, rating: 5)
-      rating1 = create(:book_review, rating: 3)
-      rating1 = create(:book_review, rating: 1)
+      rating1 = create(:book_review, rating: 5, book_id: book.id)
+      rating1 = create(:book_review, rating: 3, book_id: book.id)
+      rating1 = create(:book_review, rating: 1, book_id: book.id)
 
       #average_rating
       expect(book.average_rating).to eq(3)

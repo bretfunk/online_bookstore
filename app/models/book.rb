@@ -9,15 +9,16 @@ class Book < ApplicationRecord
   def self.search(query, options)
   end
 
-  #def book_format_types
-    #book_format_types.distinct.pluck(:name)
-  #end
+  def book_format_typez
+    #byebug
+    book_format_types.distinct.pluck(:name)
+  end
 
   def author_name
     "#{author.last_name}, #{author.first_name}"
   end
 
   def average_rating
-    (self.book_reviews.sum(:rating) / self.book_reviews.count).round(1)
+    (book_reviews.sum(:rating) / book_reviews.count).round(1)
   end
 end
