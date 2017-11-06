@@ -60,7 +60,9 @@ RSpec.describe Book, type: :model do
 
       book = create(:book, title: 'Karamazov')
       book.book_format_types.first.physical = true
+    end
 
+    it "has functional class methods" do
       #search
       #title_only
       author = create(:author)
@@ -68,6 +70,7 @@ RSpec.describe Book, type: :model do
       create(:book, author_id: author.id, publisher_id: publisher.id)
       #author
       search = Book.search(author.last_name, title_only: true)
+      debugger
       expect(search.count).to eq(1)
       search = Book.search(author.last_name.shift.pop, title_only: true)
       expect(search.count).to eq(0)
@@ -105,8 +108,6 @@ RSpec.describe Book, type: :model do
       search = Book.search("Softcover", physical: true)
 
       expect(search.count).to eq(0)
-
-
     end
   end
 end

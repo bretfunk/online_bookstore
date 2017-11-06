@@ -21,7 +21,7 @@ class Book < ApplicationRecord
         .where(title: "%#{query}%")
 
     elsif new_options[:title_only]
-      (Book.where("title LIKE (?)", "%#{query}%") ||
+      (Book.where(title: "%#{query}%") ||
       Author.where(last_name: query).books ||
       Publisher.where(title: query).books)
         .order("rating DESC").distinct
