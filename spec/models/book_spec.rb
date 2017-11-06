@@ -6,6 +6,9 @@ RSpec.describe Book, type: :model do
       author = create(:author)
       publisher = create(:publisher)
       book = create(:book, publisher_id: publisher.id, author_id: author.id)
+      book_format_types = create_list(:book_format_type, 3)
+      create_list(:book_review, 3, book_id: book.id)
+      book.book_format_types << book_format_types
 
       expect(book).to be_valid
       expect(book.publisher).to be_valid
@@ -14,6 +17,8 @@ RSpec.describe Book, type: :model do
       expect(book.publisher.name).to eq(publisher.name)
       expect(book.author.first_name).to eq(author.first_name)
       expect(book.author.last_name).to eq(author.last_name)
+      expect(book.book_format_types.count).to eq(3)
+      expect(book.book_reviews.count).to eq(3)
     end
   end
 
