@@ -7,6 +7,7 @@ RSpec.describe Publisher, type: :model do
       create_list(:book, 3, publisher_id: publisher.id)
 
       expect(publisher).to be_valid
+      expect(publisher).to be_valid
       expect(publisher.name).to eq("Publisher")
       expect(publisher.books.count).to eq(3)
     end
