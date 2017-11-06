@@ -70,23 +70,22 @@ RSpec.describe Book, type: :model do
       create(:book, author_id: author.id, publisher_id: publisher.id)
       #author
       search = Book.search(author.last_name, title_only: true)
-      debugger
       expect(search.count).to eq(1)
-      search = Book.search(author.last_name.shift.pop, title_only: true)
+      search = Book.search(author.last_name.slice(2, 3), title_only: true)
       expect(search.count).to eq(0)
       search = Book.search(author.last_name.upcase, title_only: true)
       expect(search.count).to eq(1)
       #publisher
       search = Book.search(publisher.name, title_only: true)
       expect(search.count).to eq(1)
-      search = Book.search(publisher.name.shift.pop, title_only: true)
+      search = Book.search(publisher.name.slice(2, 3), title_only: true)
       expect(search.count).to eq(0)
       search = Book.search(publisher.name.downcase, title_only: true)
       expect(search.count).to eq(1)
       #title
       search = Book.search(book.title, title_only: true)
       expect(search.count).to eq(1)
-      search = Book.search(book.title.shift.pop, title_only: true)
+      search = Book.search(book.title.slice(2, 3), title_only: true)
       expect(search.count).to eq(1)
 
       #book_format_type_id
