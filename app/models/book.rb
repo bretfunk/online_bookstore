@@ -9,9 +9,8 @@ class Book < ApplicationRecord
   def self.search(query, options)
   end
 
-  def book_format_typez
-    #byebug
-    book_format_types.distinct.pluck(:name)
+  def book_format_types
+    super.distinct.pluck(:name)
   end
 
   def author_name

@@ -6,7 +6,6 @@ RSpec.describe Book, type: :model do
       author = create(:author)
       publisher = create(:publisher)
       book = create(:book, publisher_id: publisher.id, author_id: author.id)
-      book_format_types = create_list(:book_format_type, 3)
       create_list(:book_review, 3, book_id: book.id)
       book.book_format_types << book_format_types
 
@@ -52,7 +51,7 @@ RSpec.describe Book, type: :model do
 
       #book_format_types
       test_array = ["Hardcover", "Kindle", "Softcover"]
-      expect(book.book_format_typez).to eq(test_array)
+      expect(book.book_format_types).to eq(test_array)
 
       rating1 = create(:book_review, rating: 5, book_id: book.id)
       rating1 = create(:book_review, rating: 3, book_id: book.id)
