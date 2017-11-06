@@ -34,4 +34,32 @@ RSpec.describe Book, type: :model do
     it { should have_many(:book_formats) }
     it { should have_many(:book_format_types) }
   end
+
+  context "methods" do
+    it "has function instance methods" do
+      author = create(:author, first_name: "Ryan", last_name: "Holiday")
+      book = create(:book, author_id: author.id)
+
+      #author_name
+      expect(book.author_name).to eq("Holiday, Ryan")
+
+      book_format_type1 = create(:book_format_type, name: "Hardcover")
+      book_format_type2 = create(:book_format_type, name: "Softcover")
+      book_format_type3 = create(:book_format_type, name: "Kindle")
+      create(:book_format, book_id: book.id, book_format_type_id: book_format_type1.id)
+      create(:book_format, book_id: book.id, book_format_type_id: book_format_type2.id)
+      create(:book_format, book_id: book.id, book_format_type_id: book_format_type3.id)
+
+      #book_format_types
+      expect(book.book_format_types).to eq('["Hardcover", "Softcover", Kindle"]')
+
+      rating1 = create(:book_review, rating: 5)
+      rating1 = create(:book_review, rating: 3)
+      rating1 = create(:book_review, rating: 1)
+
+      #average_rating
+      expect(book.average_rating).to eq(3)
+
+    end
+  end
 end
