@@ -11,7 +11,6 @@ RSpec.describe BookFormatType, type: :model do
       expect(book_format_type.name).to eq("Kindle")
       expect(book_format_type.physical).to eq(false)
       expect(book_format_type.books.first.title).to eq("BookTitle")
-
     end
   end
 
