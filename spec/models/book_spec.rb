@@ -7,7 +7,6 @@ RSpec.describe Book, type: :model do
       publisher = create(:publisher)
       book = create(:book, publisher_id: publisher.id, author_id: author.id)
       create_list(:book_review, 3, book_id: book.id)
-      book.book_format_types << book_format_types
 
       expect(book).to be_valid
       expect(book.publisher).to be_valid
@@ -16,7 +15,6 @@ RSpec.describe Book, type: :model do
       expect(book.publisher.name).to eq(publisher.name)
       expect(book.author.first_name).to eq(author.first_name)
       expect(book.author.last_name).to eq(author.last_name)
-      expect(book.book_format_types.count).to eq(3)
       expect(book.book_reviews.count).to eq(3)
     end
   end
@@ -60,6 +58,51 @@ RSpec.describe Book, type: :model do
       #average_rating
       expect(book.average_rating).to eq(3)
 
+      book = create(:book, title: 'Karamazov')
+      book.book_format_types.first.physical = true
+    end
+
+    context "has functional class methods" do
+      it "searches title only" do
+      #search
+      #title_only
+      author = create(:author)
+      publisher = create(:publisher)
+      book = create(:book, author_id: author.id, publisher_id: publisher.id)
+
+      search = Book.search(book.title, title_only: true)
+      expect(search.count).to eq(1)
+
+      search = Book.search(book.title.slice(2, 3), title_only: true)
+      expect(search.count).to eq(1)
+    end
+
+    it "searches book format type" do
+
+      #book_format_type_id
+      author = create(:author)
+      book_format_type = create(:book_format_type)
+      books = create_list(:book, 3, author_id: author.id)
+      book_format_type.books << books
+      #debugger
+      search = Book.search(author.last_name, book_format_type_id: book_format_type.id)
+
+      expect(search.count).to eq(3)
+    end
+
+    it "searches physical book format" do
+      #book_format_physical
+      author = create(:author)
+      publisher = create(:publisher)
+
+      book_format_type = create(:book_format_type, physical: true)
+      books = create_list(:book, 3, author_id: author.id, publisher_id: publisher.id)
+      book_format_type.books << books
+      search = Book.search(author.last_name, book_format_physical: true)
+
+      expect(search.count).to eq(3)
+
+    end
     end
   end
 end
