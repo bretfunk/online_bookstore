@@ -62,7 +62,8 @@ RSpec.describe Book, type: :model do
       book.book_format_types.first.physical = true
     end
 
-    it "has functional class methods" do
+    context "has functional class methods" do
+      it "searches title only" do
       #search
       #title_only
       author = create(:author)
@@ -74,16 +75,22 @@ RSpec.describe Book, type: :model do
 
       search = Book.search(book.title.slice(2, 3), title_only: true)
       expect(search.count).to eq(1)
+    end
+
+    it "searches book format type" do
 
       #book_format_type_id
       author = create(:author)
       book_format_type = create(:book_format_type)
       books = create_list(:book, 3, author_id: author.id)
-      #debugger
       book_format_type.books << books
+      #debugger
       search = Book.search(author.last_name, book_format_type_id: book_format_type.id)
 
       expect(search.count).to eq(3)
+    end
+
+    it "searches physical book format" do
 
       #book_format_physical
       book_format_type = create(:book_format_type, name: "Hardcover", physical: true)
@@ -96,6 +103,7 @@ RSpec.describe Book, type: :model do
       search = Book.search("Moby Dick", book_format_physical: false)
 
       expect(search.count).to eq(0)
+    end
     end
   end
 end

@@ -20,9 +20,10 @@ class Book < ApplicationRecord
     elsif new_options[:title_only]
       title_search(query)
     elsif new_options[:book_format_type_id]
+      #debugger
       book_format_search(query, new_options[:book_format_type_id])
     elsif new_options[:book_format_physical]
-      physical_book_search(query)
+      physical_book_search(query, new_options[:book_format_physical])
     else
       author_publisher_search(query)
     end
@@ -44,16 +45,25 @@ class Book < ApplicationRecord
     author = Author.find_by(last_name: query)
     publisher = Publisher.find_by(name: query)
     if author
-    Book.find_by_sql("SELECT b.* FROM books b INNER JOIN book_formats bf ON b.id = bf.book_id WHERE bf.book_format_type_id = #{search_id} AND b.author_id = #{author.id}")
+    Book.find_by_sql("SELECT b.* FROM books b INNER JOIN book_formats bf ON b.id = bf.book_id
+                     WHERE bf.book_format_type_id = #{search_id} AND b.author_id = #{author.id}")
     elsif publisher
-      Book.find_by_sql("SELECT b.* FROM books b INNER JOIN book_formats bf ON b.id = bf.book_id WHERE bf.book_format_type_id = #{search_id} AND b.publisher_id = #{publisher.id}")
+      Book.find_by_sql("SELECT b.* FROM books b INNER JOIN book_formats bf ON b.id = bf.book_id
+                       WHERE bf.book_format_type_id = #{search_id} AND b.publisher_id = #{publisher.id}")
     end
-    #search = Author.find_by(last_name: query)  || Publisher.find_by(name: query)
-    #search.books.where(id: search_id)
-    #BookFormatType.joins(:books).select("books.*").where(id: search_id)
   end
 
-  def physical_book_search(query)
+  def physical_book_search(query, physical)
+    author = Author.find_by(last_name: query)
+    publisher = Publisher.find_by(name: query)
+    debugger
+    if author
+    Book.find_by_sql("SELECT b.* FROM books b INNER JOIN book_formats bf ON b.id = bf.book_id
+                     WHERE bf.book_format_type_id = #{search_id} AND b.author_id = #{author.id}")
+    elsif publisher
+      Book.find_by_sql("SELECT b.* FROM books b INNER JOIN book_formats bf ON b.id = bf.book_id
+                       WHERE bf.book_format_type_id = #{search_id} AND b.publisher_id = #{publisher.id}")
+    end
     #BookFormatType.joins(:books).select("books.*").where(physical: true)
   end
 
