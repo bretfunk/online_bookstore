@@ -20,7 +20,7 @@ class Book < ApplicationRecord
     elsif new_options[:title_only]
       title_search(query)
     elsif new_options[:book_format_type_id]
-      book_format_search(query)
+      book_format_search(query, new_options[:book_format_type_id])
     elsif new_options[:book_format_physical]
       physical_book_search(query)
     else
@@ -40,16 +40,21 @@ class Book < ApplicationRecord
         .where(title: "%#{query}%")
   end
 
-  def book_format_search(query)
-    BookFormatType.joins(:books).select("books.*").where(id: query)
+  def book_format_search(query, search_id)
+    BookFormatType.joins(:books).select("books.*").where(id: search_id)
   end
 
   def physical_book_search(query)
-    BookFormatType.joins(:books).select("books.*").where(physical: true).where(name: query)
+    BookFormatType.joins(:books).select("books.*").where(physical: true)
   end
 
   def author_publisher_search(query)
 
+    if Author.where(last_name: query)
+      Author.where(last_name: query).books
+    elsif Publisher.where(name: query)
+      Publisher.where(name: query).books
+    end
   end
 
   #def book_format_types

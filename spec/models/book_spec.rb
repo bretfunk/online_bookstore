@@ -87,11 +87,11 @@ RSpec.describe Book, type: :model do
       book_format_type = create(:book_format_type, name: "Hardcover", physical: true)
       books = create_list(:book, 3)
       book_format_type.books << books
-      search = Book.search("Hardcover", book_format_physical: true)
+      search = Book.search("Moby Dick", book_format_physical: true)
 
       expect(search.count).to eq(3)
 
-      search = Book.search("Softcover", book_format_physical: true)
+      search = Book.search("Moby Dick", book_format_physical: true)
 
       expect(search.count).to eq(0)
     end
