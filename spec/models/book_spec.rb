@@ -76,10 +76,12 @@ RSpec.describe Book, type: :model do
       expect(search.count).to eq(1)
 
       #book_format_type_id
+      author = create(:author)
       book_format_type = create(:book_format_type)
-      books = create_list(:book, 3)
+      books = create_list(:book, 3, author_id: author.id)
+      #debugger
       book_format_type.books << books
-      search = Book.search(book_format_type.id, book_format_type_id: true)
+      search = Book.search(author.last_name, book_format_type_id: book_format_type.id)
 
       expect(search.count).to eq(3)
 
@@ -91,7 +93,7 @@ RSpec.describe Book, type: :model do
 
       expect(search.count).to eq(3)
 
-      search = Book.search("Moby Dick", book_format_physical: true)
+      search = Book.search("Moby Dick", book_format_physical: false)
 
       expect(search.count).to eq(0)
     end

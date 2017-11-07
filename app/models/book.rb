@@ -41,11 +41,20 @@ class Book < ApplicationRecord
   end
 
   def book_format_search(query, search_id)
-    BookFormatType.joins(:books).select("books.*").where(id: search_id)
+    author = Author.find_by(last_name: query)
+    publisher = Publisher.find_by(name: query)
+    if author
+    Book.find_by_sql("SELECT b.* FROM books b INNER JOIN book_formats bf ON b.id = bf.book_id WHERE bf.book_format_type_id = #{search_id} AND b.author_id = #{author.id}")
+    elsif publisher
+      Book.find_by_sql("SELECT b.* FROM books b INNER JOIN book_formats bf ON b.id = bf.book_id WHERE bf.book_format_type_id = #{search_id} AND b.publisher_id = #{publisher.id}")
+    end
+    #search = Author.find_by(last_name: query)  || Publisher.find_by(name: query)
+    #search.books.where(id: search_id)
+    #BookFormatType.joins(:books).select("books.*").where(id: search_id)
   end
 
   def physical_book_search(query)
-    BookFormatType.joins(:books).select("books.*").where(physical: true)
+    #BookFormatType.joins(:books).select("books.*").where(physical: true)
   end
 
   def author_publisher_search(query)
