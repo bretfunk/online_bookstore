@@ -67,24 +67,11 @@ RSpec.describe Book, type: :model do
       #title_only
       author = create(:author)
       publisher = create(:publisher)
-      create(:book, author_id: author.id, publisher_id: publisher.id)
-      #author
-      search = Book.search(author.last_name, title_only: true)
-      expect(search.count).to eq(1)
-      search = Book.search(author.last_name.slice(2, 3), title_only: true)
-      expect(search.count).to eq(0)
-      search = Book.search(author.last_name.upcase, title_only: true)
-      expect(search.count).to eq(1)
-      #publisher
-      search = Book.search(publisher.name, title_only: true)
-      expect(search.count).to eq(1)
-      search = Book.search(publisher.name.slice(2, 3), title_only: true)
-      expect(search.count).to eq(0)
-      search = Book.search(publisher.name.downcase, title_only: true)
-      expect(search.count).to eq(1)
-      #title
+      book = create(:book, author_id: author.id, publisher_id: publisher.id)
+
       search = Book.search(book.title, title_only: true)
       expect(search.count).to eq(1)
+
       search = Book.search(book.title.slice(2, 3), title_only: true)
       expect(search.count).to eq(1)
 
@@ -92,7 +79,7 @@ RSpec.describe Book, type: :model do
       book_format_type = create(:book_format_type)
       books = create_list(:book, 3)
       book_format_type.books << books
-      search = Book.search("1", book_format_type_id: true)
+      search = Book.search(book_format_type.id, book_format_type_id: true)
 
       expect(search.count).to eq(3)
 
@@ -100,11 +87,11 @@ RSpec.describe Book, type: :model do
       book_format_type = create(:book_format_type, name: "Hardcover", physical: true)
       books = create_list(:book, 3)
       book_format_type.books << books
-      search = Book.search("Hardcover", physical: true)
+      search = Book.search("Hardcover", book_format_physical: true)
 
       expect(search.count).to eq(3)
 
-      search = Book.search("Softcover", physical: true)
+      search = Book.search("Softcover", book_format_physical: true)
 
       expect(search.count).to eq(0)
     end

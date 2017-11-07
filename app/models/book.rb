@@ -21,13 +21,7 @@ class Book < ApplicationRecord
         .where(title: "%#{query}%")
 
     elsif new_options[:title_only]
-      new.author_search(query) unless nil
-      new.publisher_search(query) unless nil
-      new.title_search(query) unless nil
-      #(Book.where(title: "%#{query}%") ||
-      #Author.find(last_name: query).books ||
-      #Publisher.find(title: query).books)
-        #.order("rating DESC").distinct
+      new.title_search(query)
 
     elsif new_options[:book_format_type_id]
       BookFormatType.joins(:books).select("books.*").where(id: query)
@@ -37,16 +31,8 @@ class Book < ApplicationRecord
     end
   end
 
-  def title_search(title)
-      Book.where(title: "%#{title}%")
-  end
-
-  def author_search(last_name)
-      Author.find_by(last_name: last_name).books
-  end
-
-  def publisher_search(name)
-      Publisher.find_by(name: name).books
+  def title_search(query)
+    Book.where("title LIKE (?)",  "%#{query}%")
   end
 
   #def book_format_types
