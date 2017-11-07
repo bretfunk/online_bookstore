@@ -12,27 +12,44 @@ class Book < ApplicationRecord
       book_format_type_id: options[:book_format_type_id] || nil,
       book_format_physical: options[:book_format_physical] || nil
     }
+    new.search_selector(new_options, query)
+  end
 
+  def search_selector(new_options, query)
     if new_options[:title_only] && new_options[:book_format_physical]
-      BookFormatType
-        .joins(:books)
-        .select("books.*")
-        .where(physical: true)
-        .where(title: "%#{query}%")
-
     elsif new_options[:title_only]
-      new.title_search(query)
-
+      title_search(query)
     elsif new_options[:book_format_type_id]
-      BookFormatType.joins(:books).select("books.*").where(id: query)
-
+      book_format_search(query)
     elsif new_options[:book_format_physical]
-      BookFormatType.joins(:books).select("books.*").where(physical: true).where(name: query)
+      physical_book_search(query)
+    else
+      author_publisher_search(query)
     end
   end
 
   def title_search(query)
     Book.where("title LIKE (?)",  "%#{query}%")
+  end
+
+  def title_and_physical_search(query)
+      BookFormatType
+        .joins(:books)
+        .select("books.*")
+        .where(physical: true)
+        .where(title: "%#{query}%")
+  end
+
+  def book_format_search(query)
+    BookFormatType.joins(:books).select("books.*").where(id: query)
+  end
+
+  def physical_book_search(query)
+    BookFormatType.joins(:books).select("books.*").where(physical: true).where(name: query)
+  end
+
+  def author_publisher_search(query)
+
   end
 
   #def book_format_types
