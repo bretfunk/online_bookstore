@@ -15,6 +15,7 @@ class Book < ApplicationRecord
     new.search_selector(new_options, query)
   end
 
+  #still need case insensitive
   def search_selector(new_options, query)
     if new_options[:title_only] && new_options[:book_format_physical]
     elsif new_options[:title_only]
@@ -24,8 +25,6 @@ class Book < ApplicationRecord
       book_format_search(query, new_options[:book_format_type_id])
     elsif new_options[:book_format_physical]
       physical_book_search(query, new_options[:book_format_physical])
-    else
-      author_publisher_search(query)
     end
   end
 
@@ -56,23 +55,14 @@ class Book < ApplicationRecord
   def physical_book_search(query, physical)
     author = Author.find_by(last_name: query)
     publisher = Publisher.find_by(name: query)
-    debugger
     if author
     Book.find_by_sql("SELECT b.* FROM books b INNER JOIN book_formats bf ON b.id = bf.book_id
-                     WHERE bf.book_format_type_id = #{search_id} AND b.author_id = #{author.id}")
+                      INNER JOIN book_format_types bft ON bf.book_format_type_id = bft.id
+                     WHERE author_id = #{author.id} AND bft.physical = #{physical}")
     elsif publisher
-      Book.find_by_sql("SELECT b.* FROM books b INNER JOIN book_formats bf ON b.id = bf.book_id
-                       WHERE bf.book_format_type_id = #{search_id} AND b.publisher_id = #{publisher.id}")
-    end
-    #BookFormatType.joins(:books).select("books.*").where(physical: true)
-  end
-
-  def author_publisher_search(query)
-
-    if Author.where(last_name: query)
-      Author.where(last_name: query).books
-    elsif Publisher.where(name: query)
-      Publisher.where(name: query).books
+    Book.find_by_sql("SELECT b.* FROM books b INNER JOIN book_formats bf ON b.id = bf.book_id
+                      INNER JOIN book_format_types bft ON bf.book_format_type_id = bft.id
+                     WHERE publisher_id = #{publisher.id} AND bft.physical = #{physical}")
     end
   end
 
