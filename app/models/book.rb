@@ -44,12 +44,8 @@ class Book < ApplicationRecord
     publisher = Publisher.where("lower(name) = ?", query.downcase).first
     if author
       book_format_SQL_query(search_id, author, "author")
-    #Book.find_by_sql("SELECT b.* FROM books b INNER JOIN book_formats bf ON b.id = bf.book_id
-                     #WHERE bf.book_format_type_id = #{search_id} AND b.author_id = #{author.id}")
     elsif publisher
       book_format_SQL_query(search_id, publisher, "publisher")
-      #Book.find_by_sql("SELECT b.* FROM books b INNER JOIN book_formats bf ON b.id = bf.book_id
-                       #WHERE bf.book_format_type_id = #{search_id} AND b.publisher_id = #{publisher.id}")
     end
   end
 
@@ -63,14 +59,16 @@ class Book < ApplicationRecord
     author = Author.where("lower(last_name) = ?", query.downcase).first
     publisher = Publisher.where("lower(name) = ?", query.downcase).first
     if author
-    Book.find_by_sql("SELECT b.* FROM books b INNER JOIN book_formats bf ON b.id = bf.book_id
-                      INNER JOIN book_format_types bft ON bf.book_format_type_id = bft.id
-                     WHERE author_id = #{author.id} AND bft.physical = #{physical}")
+      physical_book_SQL_query(physical, author, "author")
     elsif publisher
+      physical_book_SQL_query(physical, publisher, "publisher")
+    end
+  end
+
+  def physical_book_SQL_query(physical, object, string)
     Book.find_by_sql("SELECT b.* FROM books b INNER JOIN book_formats bf ON b.id = bf.book_id
                       INNER JOIN book_format_types bft ON bf.book_format_type_id = bft.id
-                     WHERE publisher_id = #{publisher.id} AND bft.physical = #{physical}")
-    end
+                     WHERE #{string}_id = #{object.id} AND bft.physical = #{physical}")
   end
 
   #def book_format_types
