@@ -21,7 +21,6 @@ class Book < ApplicationRecord
     elsif new_options[:title_only]
       title_search(query)
     elsif new_options[:book_format_type_id]
-      #debugger
       book_format_search(query, new_options[:book_format_type_id])
     elsif new_options[:book_format_physical]
       physical_book_search(query, new_options[:book_format_physical])
@@ -41,20 +40,28 @@ class Book < ApplicationRecord
   end
 
   def book_format_search(query, search_id)
-    author = Author.find_by(last_name: query)
-    publisher = Publisher.find_by(name: query)
+    author = Author.where("lower(last_name) = ?", query.downcase).first
+    publisher = Publisher.where("lower(name) = ?", query.downcase).first
     if author
-    Book.find_by_sql("SELECT b.* FROM books b INNER JOIN book_formats bf ON b.id = bf.book_id
-                     WHERE bf.book_format_type_id = #{search_id} AND b.author_id = #{author.id}")
+      book_format_SQL_query(search_id, author, "author")
+    #Book.find_by_sql("SELECT b.* FROM books b INNER JOIN book_formats bf ON b.id = bf.book_id
+                     #WHERE bf.book_format_type_id = #{search_id} AND b.author_id = #{author.id}")
     elsif publisher
-      Book.find_by_sql("SELECT b.* FROM books b INNER JOIN book_formats bf ON b.id = bf.book_id
-                       WHERE bf.book_format_type_id = #{search_id} AND b.publisher_id = #{publisher.id}")
+      book_format_SQL_query(search_id, publisher, "publisher")
+      #Book.find_by_sql("SELECT b.* FROM books b INNER JOIN book_formats bf ON b.id = bf.book_id
+                       #WHERE bf.book_format_type_id = #{search_id} AND b.publisher_id = #{publisher.id}")
     end
   end
 
+  def book_format_SQL_query(search_id, object, string)
+    Book.find_by_sql("SELECT b.* FROM books b INNER JOIN book_formats bf ON b.id = bf.book_id
+                     WHERE bf.book_format_type_id = #{search_id} AND b.#{string}_id = #{object.id}")
+
+  end
+
   def physical_book_search(query, physical)
-    author = Author.find_by(last_name: query)
-    publisher = Publisher.find_by(name: query)
+    author = Author.where("lower(last_name) = ?", query.downcase).first
+    publisher = Publisher.where("lower(name) = ?", query.downcase).first
     if author
     Book.find_by_sql("SELECT b.* FROM books b INNER JOIN book_formats bf ON b.id = bf.book_id
                       INNER JOIN book_format_types bft ON bf.book_format_type_id = bft.id
